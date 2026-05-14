@@ -1,0 +1,140 @@
+market_research_task:
+  description: >
+    Conduct thorough market research for the startup idea: "{startup_idea}".
+
+    Your research must cover the following areas:
+    1. Market Overview — What industry does this idea belong to?
+    2. Market Size — Estimate TAM, SAM, and SOM with numbers.
+    3. Market Growth — Current growth rate, projected CAGR, and key growth drivers.
+    4. Industry Trends — Top 5 trends shaping this market right now.
+    5. Key Market Opportunities — Where is the whitespace?
+    6. Regulatory & External Factors — Any laws or macro factors that could impact this market.
+
+    STEP 1 — Use search_the_internet_with_serper MAXIMUM 2 times to gather data.
+    STEP 2 — Write your full detailed Market Research Report using the search results.
+    STEP 3 — Call store_report_in_vector_db with your full report,
+              agent_name "market_research_analyst", and a 5-bullet summary.
+    STEP 4 — Return ONLY the 5-bullet summary as your final output.
+             Do NOT return the full report as output.
+  expected_output: >
+    ONLY a 5-bullet summary of the most critical market research findings.
+    Nothing else. No full report. Just the summary.
+  agent: market_research_analyst
+
+
+competitor_research_task:
+  description: >
+    Perform a deep competitor analysis for the startup idea: "{startup_idea}".
+
+    Your research must cover the following:
+    1. Direct Competitors — Top 5 direct competitors with strengths and weaknesses.
+    2. Indirect Competitors — Top 3 indirect competitors.
+    3. Market Gaps — Specific gaps competitors have missed. (Most important section)
+    4. Differentiation Opportunities — How can this startup position itself uniquely?
+
+    STEP 1 — Call retrieve_from_research_reports ONCE with query "market size trends opportunities".
+    STEP 2 — Use search_the_internet_with_serper MAXIMUM 2 times to research competitors.
+    STEP 3 — Write your full detailed Competitor Analysis Report.
+    STEP 4 — Call store_report_in_vector_db with your full report,
+              agent_name "competitor_researcher", and a  summary.
+    STEP 5 — Return ONLY the  summary as your final output.
+             Do NOT return the full report as output.
+  expected_output: >
+    ONLY a 5-bullet summary of the most critical competitor research findings.
+    Nothing else. No full report. Just the 5 bullets.
+  agent: competitor_researcher
+  context:
+    - market_research_task
+
+
+customer_research_task:
+  description: >
+    Conduct comprehensive customer research for the startup idea: "{startup_idea}".
+
+    Your research must cover:
+    1. Customer Segmentation — Identify 3-4 distinct customer segments.
+    2. Customer Personas — Detailed persona for each segment.
+    3. Pain Points — Top 5 pain points customers experience today.
+    4. Customer Needs & Desires — Functional and emotional needs.
+    5. Buying Behavior — How customers research, decide, and purchase.
+    6. Customer Journey Map — From awareness to purchase.
+    7. Willingness to Pay — Likely price ranges.
+
+    STEP 1 — Call retrieve_from_research_reports ONCE with query
+              "competitor gaps market opportunities target users".
+    STEP 2 — Use search_the_internet_with_serper MAXIMUM 2 times
+              to research customer data and pain points.
+    STEP 3 — Write your full detailed Customer Research Report.
+    STEP 4 — Call store_report_in_vector_db with your full report,
+              agent_name "customer_researcher", and a 5-bullet summary.
+    STEP 5 — Return ONLY the  summary as your final output.
+             Do NOT return the full report as output.
+  expected_output: >
+    ONLY a 5-bullet summary of the most critical customer research findings.
+    Nothing else. No full report. Just the 5 bullets.
+  agent: customer_researcher
+  context:
+    - market_research_task
+    - competitor_research_task
+
+
+product_research_task:
+  description: >
+    Conduct product research for the startup idea: "{startup_idea}".
+
+    Your research must cover:
+    1. Core Product Features — Must-have MVP features (MoSCoW prioritization).
+    2. Product Design Direction — UX/UI feel with 2-3 benchmark products.
+    3. Technology Stack — Frontend, backend, database, AI/ML components.
+    4. MVP Scope — Smallest version that delivers real value.
+    5. Product Roadmap — 3-phase roadmap (MVP → Growth → Scale).
+    6. Unique Product Angles — Innovations that make this stand out.
+
+    STEP 1 — Call retrieve_from_research_reports ONCE with query
+              "customer pain points competitor gaps product opportunities".
+    STEP 2 — Use search_the_internet_with_serper MAXIMUM 2 times
+              to research benchmark products and tech stacks.
+    STEP 3 — Write your full detailed Product Research Report.
+    STEP 4 — Call store_report_in_vector_db with your full report,
+              agent_name "product_researcher", and a  summary.
+    STEP 5 — Return ONLY the  summary as your final output.
+             Do NOT return the full report as output.
+  expected_output: >
+    ONLY a 5-bullet summary of the most critical product research findings.
+    Nothing else. No full report. Just the 5 bullets.
+  agent: product_researcher
+  context:
+    - market_research_task
+    - competitor_research_task
+    - customer_research_task
+
+
+business_analysis_task:
+  description: >
+    You are the final agent. Synthesize ALL four research reports for
+    the startup idea: "{startup_idea}" into one master business report.
+
+    Produce the MASTER Business Analysis Report that includes:
+    1. Executive Summary — Powerful 1-page summary of the opportunity.
+    2. SWOT Analysis — Based on all research findings.
+    3. Business Model Recommendations — Best model with revenue streams.
+    4. Revenue Potential — Year 1, Year 2, Year 3 projections with assumptions.
+    5. Go-To-Market Strategy — Which segment first, which channels.
+    6. Key Risks & Mitigations — Top 5 risks with mitigation strategies.
+    7. Funding Requirements — Capital needed for MVP and Year 1.
+    8. Final Verdict — Viability score 1-10 with Build It / Pivot / Avoid.
+
+    STEP 1 — Call retrieve_from_research_reports EXACTLY 3 times:
+              Query 1: "TAM SAM SOM market size numbers and growth rate"
+              Query 2: "top competitor gaps and differentiation opportunities"
+              Query 3: "customer personas pain points and willingness to pay"
+    STEP 2 — Write the full investor-ready Master Business Analysis Report.
+  expected_output: >
+    A Master Business Analysis Report in markdown format with all 8 sections
+    fully detailed and investor-ready.
+  agent: business_analyst
+  context:
+    - market_research_task
+    - competitor_research_task
+    - customer_research_task
+    - product_research_task
